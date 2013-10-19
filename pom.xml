@@ -3,6 +3,22 @@
   <groupId>com.charmyin</groupId>
   <artifactId>StudyJava</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  
+  <dependencies>
+	<!-- Apache Datasource -->
+	<!-- <dependency>
+		<groupId>org.apache.tomcat</groupId>
+		<artifactId>dbcp</artifactId>
+		<version>${org.apache.tomcat.dbcp_version}</version>
+	</dependency> -->
+	
+	<dependency>
+		<groupId>commons-collections</groupId>
+		<artifactId>commons-collections</artifactId>
+		<version>3.2.1</version>
+	</dependency>
+	            
+  </dependencies>  
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
