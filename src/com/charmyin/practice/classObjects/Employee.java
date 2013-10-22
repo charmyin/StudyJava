@@ -6,6 +6,7 @@ package com.charmyin.practice.classObjects;
  * @since 2013-10-21 10:30:09
  */
 public class Employee {
+	
 	private String name;
 	private int age;
 	
