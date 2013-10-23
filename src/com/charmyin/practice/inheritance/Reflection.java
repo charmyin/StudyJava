@@ -2,6 +2,7 @@ package com.charmyin.practice.inheritance;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.junit.Test;
@@ -38,5 +39,29 @@ public class Reflection {
 			System.out.println("getFields()="+fi.getName());
 		}
 	}
+	
+	@Test
+	public void testInvokeMethod() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+		//MethodContainer mcc = new MethodContainer();
+		
+		Class mc = MethodContainer.class;
+		Method mcDoubleName = mc.getMethod("doubleString", String.class);
+		String str = (String)mcDoubleName.invoke(null, "hello");
+		System.out.println(str);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }
