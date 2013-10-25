@@ -1,5 +1,7 @@
 package com.charmyin.practice.interfacetest;
 
+import com.charmyin.practice.classObjects.Employee;
+
 /**
  * Test interface
  * @author YinCM
@@ -7,5 +9,6 @@ package com.charmyin.practice.interfacetest;
  */
 public interface USB {
 	static final String version = "2.0";
-	void readData();
+	public void readData();
+	public void readEmployee(Employee employee);
 }
