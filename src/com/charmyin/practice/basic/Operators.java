@@ -44,15 +44,26 @@ public class Operators {
 	/**
 	 * Test operate ">>>" 
 	 */
-//	@Test
+    @Test
 	public void testBitwiseTE(){
-			int i = 1023>>>105 ;//-1111110
+    	//与>>的区别在于>>>符号位也一起右移，>>保留符号位
+    		int j = -1024;
+			int i = -1024>>>3 ;//11111110
+			System.out.println("old i = "+Integer.toBinaryString(j)+":"+Integer.toBinaryString(j).length());
 			System.out.println("i="+i+":"+ Integer.toBinaryString(i)+":"+Integer.toBinaryString(i).length());
 //			System.out.println("i="+ Integer.toBinaryString(i)+":"+Integer.toBinaryString(i).length());
 //			System.out.println("j="+ Integer.toBinaryString(j)+":"+Integer.toBinaryString(j).length());
 			System.out.println("-----------");
 		
 	}
+    
+    @Test
+    public void getMidOfTwoInt(){
+    	int a = 15;
+    	int b = 17;
+    	int avg = (a+b)>>>1;
+    	System.out.println("a="+a+";b="+b+";avg="+avg);
+    }
 	
 	/**
 	 * Test math tangant

@@ -11,19 +11,18 @@ import com.charmyin.practice.classObjects.Employee;
  {
    public static void main(String[] args)
    {
-	   	  Object element = new Object();
+	   Mp3Player element = null;
 
 	   	  Employee employee = new Employee("charmyin",21);
-       
+	   	  Mp3Player mp3 = new Mp3Player();
          
-          Class[] interfaces = {USB.class};//value.getClass().getInterfaces();
-          InvocationHandler handler = new TraceHandler2(employee);
+          Class[] interfaces = {USB.class};//employee.getClass().getInterfaces();//
+          InvocationHandler handler = new TraceHandler2(mp3);
           
-          Object proxy = Proxy.newProxyInstance(null, interfaces, handler);
-          element = proxy;
+          Object proxy = Proxy.newProxyInstance(Mp3Player.class.getClassLoader(), interfaces, handler);
+          element = (Mp3Player)proxy;
        
-          Mp3Player mp3 = new Mp3Player();
-          mp3.readEmployee(employee);
+          element.readEmployee(employee);
 
     }
  }
@@ -50,15 +49,6 @@ import com.charmyin.practice.classObjects.Employee;
        // print method name
        System.out.print("." + m.getName() + "(");
        // print explicit arguments
-       if (args != null)
-       {
-         for (int i = 0; i < args.length; i++)
-          {
-            System.out.print(args[i]);
-             if (i < args.length - 1)
-                System.out.print(", ");
-          }
-       }
        System.out.println(")");
 
        // invoke actual method
