@@ -12,8 +12,14 @@ import java.util.Date;
  * @author YinCM
  * @since 2013-10-21 10:30:09
  */
-public class Employee implements Cloneable, Serializable  {
+public class Employee implements Comparable, Cloneable, Serializable  {
 	
+	@Override
+	public int compareTo(Object o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	private static final long serialVersionUID = -6579358768304389035L;
 //  private static final long serialVersionUID = 1L;
 	private String name;

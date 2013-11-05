@@ -1,0 +1,125 @@
+1. import java.io.*;
+  2. import java.util.*;
+  3. import java.util.concurrent.*;
+  4.
+  5. public class BlockingQueueTest
+  6. {
+  7.    public static void main(String[] args)
+  8.    {
+  9.       Scanner in = new Scanner(System.in);
+ 10.       System.out.print("Enter base directory (e.g. /usr/local/jdk5.0/src): ");
+ 11.       String directory = in.nextLine();
+ 12.       System.out.print("Enter keyword (e.g. volatile): ");
+ 13.       String keyword = in.nextLine();
+ 14.
+ 15.       final int FILE_QUEUE_SIZE = 10;
+ 16.       final int SEARCH_THREADS = 100;
+ 17.
+ 18.       BlockingQueue<File> queue = new ArrayBlockingQueue<File>(FILE_QUEUE_SIZE);
+ 19.
+ 20.       FileEnumerationTask enumerator = new FileEnumerationTask(queue, new File
+(directory));
+ 21.       new Thread(enumerator).start();
+ 22.       for (int i = 1; i <= SEARCH_THREADS; i++)
+ 23.          new Thread(new SearchTask(queue, keyword)).start();
+ 24.    }
+ 25. }
+ 26.
+ 27. /**
+ 28.    This task enumerates all files in a directory and its subdirectories.
+ 29. */
+ 30. class FileEnumerationTask implements Runnable
+ 31. {
+ 32.    /**
+ 33.       Constructs a FileEnumerationTask.
+ 34.       @param queue the blocking queue to which the enumerated files are added
+ 35.       @param startingDirectory the directory in which to start the enumeration
+ 36.    */
+ 37.    public FileEnumerationTask(BlockingQueue<File> queue, File startingDirectory)
+ 38.    {
+ 39.       this.queue = queue;
+ 40.       this.startingDirectory = startingDirectory;
+ 41.    }
+ 42.
+ 43.    public void run()
+ 44.    {
+ 45.       try
+ 46.       {
+ 47.          enumerate(startingDirectory);
+ 48.          queue.put(DUMMY);
+ 49.       }
+ 50.       catch (InterruptedException e) {}
+ 51.    }
+ 52.
+ 53.    /**
+ 54.       Recursively enumerates all files in a given directory and its subdirectories
+ 55.       @param directory the directory in which to start
+ 56.    */
+ 57.    public void enumerate(File directory) throws InterruptedException
+ 58.    {
+ 59.       File[] files = directory.listFiles();
+ 60.       for (File file : files)      {
+ 61.          if (file.isDirectory()) enumerate(file);
+ 62.          else queue.put(file);
+ 63.       }
+ 64.    }
+ 65.
+ 66.    public static File DUMMY = new File("");
+ 67.
+ 68.    private BlockingQueue<File> queue;
+ 69.    private File startingDirectory;
+ 70. }
+ 71.
+ 72. /**
+ 73.    This task searches files for a given keyword.
+ 74. */
+ 75. class SearchTask implements Runnable
+ 76. {
+ 77.    /**
+ 78.       Constructs a SearchTask.
+ 79.       @param queue the queue from which to take files
+ 80.       @param keyword the keyword to look for
+ 81.    */
+ 82.    public SearchTask(BlockingQueue<File> queue, String keyword)
+ 83.    {
+ 84.       this.queue = queue;
+ 85.       this.keyword = keyword;
+ 86.    }
+ 87.
+ 88.    public void run()
+ 89.    {
+ 90.       try
+ 91.       {
+ 92.          boolean done = false;
+ 93.          while (!done)
+ 94.          {
+ 95.             File file = queue.take();
+ 96.             if (file == FileEnumerationTask.DUMMY) { queue.put(file); done = true; }
+ 97.             else search(file);
+ 98.          }
+ 99.       }
+100.       catch (IOException e) { e.printStackTrace(); }
+101.       catch (InterruptedException e) {}
+102.    }
+103.
+104.    /**
+105.       Searches a file for a given keyword and prints all matching lines.
+106.       @param file the file to search
+107.    */
+108.    public void search(File file) throws IOException
+109.    {
+110.       Scanner in = new Scanner(new FileInputStream(file));
+111.       int lineNumber = 0;
+112.       while (in.hasNextLine())
+113.       {
+114.          lineNumber++;
+115.          String line = in.nextLine();
+116.          if (line.contains(keyword))
+117.             System.out.printf("%s:%d:%s%n", file.getPath(), lineNumber, line);
+118.       }
+119.       in.close();
+120.    }
+121.
+122.    private BlockingQueue<File> queue;
+123.    private String keyword;
+124. }

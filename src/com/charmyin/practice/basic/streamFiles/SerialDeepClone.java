@@ -4,9 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PipedInputStream;
 
 import org.junit.Test;
 
@@ -34,6 +36,10 @@ public class SerialDeepClone {
 		manager.setName("manager");
 		manager.setPower("Very big");
 		manager.setSecretary(emp2);
+		
+		
+		PipedInputStream pis = new PipedInputStream();
+		
 		
 		//Deep clone
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
