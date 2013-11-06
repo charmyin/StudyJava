@@ -1,9 +1,13 @@
 package com.charmyin.practice.advantage.threads;
 
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.charmyin.util.CodeFormatManage;
 
@@ -13,15 +17,18 @@ public class BlockingQueueTest
    {
 	 //Package path
 	String directory = CodeFormatManage.class.getResource("").getPath();
-	
+	System.out.println(directory);
 	//Get code.txt file for inputstream
 	 //File file = new File(packagePath+"code.txt");
-      String keyword = "SEARCH_THREADS";
+      String keyword = "util";
 
       final int FILE_QUEUE_SIZE = 10;
       final int SEARCH_THREADS = 100;
 
-      BlockingQueue<File> queue = new ArrayBlockingQueue<File>(FILE_QUEUE_SIZE);
+      ConcurrentLinkedQueue<File> queue =new ConcurrentLinkedQueue<File>();
+      
+      
+//      BlockingQueue<File> queue = new ArrayBlockingQueue<File>(FILE_QUEUE_SIZE);
 
       FileEnumerationTask enumerator = new FileEnumerationTask(queue, new File(directory));
       new Thread(enumerator).start();
@@ -40,7 +47,7 @@ class FileEnumerationTask implements Runnable
       @param queue the blocking queue to which the enumerated files are added
       @param startingDirectory the directory in which to start the enumeration
    */
-   public FileEnumerationTask(BlockingQueue<File> queue, File startingDirectory)
+   public FileEnumerationTask(ConcurrentLinkedQueue<File> queue, File startingDirectory)
    {
       this.queue = queue;
       this.startingDirectory = startingDirectory;
@@ -51,7 +58,7 @@ class FileEnumerationTask implements Runnable
       try
       {
          enumerate(startingDirectory);
-         queue.put(DUMMY);
+         queue.add(DUMMY);
       }
       catch (InterruptedException e) {}
    }
@@ -65,13 +72,13 @@ class FileEnumerationTask implements Runnable
       File[] files = directory.listFiles();
       for (File file : files)      {
          if (file.isDirectory()) enumerate(file);
-         else queue.put(file);
+         else queue.add(file);
       }
    }
 
    public static File DUMMY = new File("");
 
-   private BlockingQueue<File> queue;
+   private ConcurrentLinkedQueue<File> queue;
    private File startingDirectory;
 }
 
@@ -85,7 +92,7 @@ class SearchTask implements Runnable
       @param queue the queue from which to take files
       @param keyword the keyword to look for
    */
-   public SearchTask(BlockingQueue<File> queue, String keyword)
+   public SearchTask(ConcurrentLinkedQueue<File> queue, String keyword)
    {
       this.queue = queue;
       this.keyword = keyword;
@@ -98,13 +105,12 @@ class SearchTask implements Runnable
          boolean done = false;
          while (!done)
          {
-            File file = queue.take();
-            if (file == FileEnumerationTask.DUMMY) { queue.put(file); done = true; }
+            File file = queue.poll();
+            if (file == FileEnumerationTask.DUMMY) { queue.add(file); done = true; }
             else search(file);
          }
       }
       catch (IOException e) { e.printStackTrace(); }
-      catch (InterruptedException e) {}
    }
 
    /**
@@ -125,6 +131,6 @@ class SearchTask implements Runnable
       in.close();
    }
 
-   private BlockingQueue<File> queue;
+   private ConcurrentLinkedQueue<File> queue;
    private String keyword;
 }
