@@ -1,186 +1,23 @@
-  1. import java.awt.*;
-  2. import java.awt.geom.*;
-  3. import java.awt.event.*;
-  4. import java.util.*;
-  5. import java.util.concurrent.*;
-  6. import javax.swing.*;
-  7.
-  8. /**
-  9.    This program animates a sort algorithm.
- 10. */
- 11. public class AlgorithmAnimation
- 12. {
- 13.    public static void main(String[] args)
- 14.    {
- 15.       JFrame frame = new AnimationFrame();
- 16.       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 17.       frame.setVisible(true);
- 18.    }
- 19. }
- 20.
- 21. /**
- 22.    This frame shows the array as it is sorted, together with buttons to single-step
- the animation
- 23.    or to run it without interruption.
- 24. */
- 25. class AnimationFrame extends JFrame
- 26. {
- 27.    public AnimationFrame()
- 28.    {
- 29.       ArrayPanel panel = new ArrayPanel();
- 30.       add(panel, BorderLayout.CENTER);
- 31.
- 32.       Double[] values = new Double[VALUES_LENGTH];
- 33.       final Sorter sorter = new Sorter(values, panel);
- 34.
- 35.       JButton runButton = new JButton("Run");
- 36.       runButton.addActionListener(new
- 37.          ActionListener()
- 38.          {
- 39.             public void actionPerformed(ActionEvent event)
- 40.             {
- 41.                sorter.setRun();
- 42.             }
- 43.          });
- 44.
- 45.       JButton stepButton = new JButton("Step");
- 46.       stepButton.addActionListener(new
- 47.          ActionListener()
- 48.          {
- 49.             public void actionPerformed(ActionEvent event)
- 50.             {
- 51.                sorter.setStep();
- 52.             }
- 53.          });
- 54.
- 55.       JPanel buttons = new JPanel();
- 56.       buttons.add(runButton);
- 57.       buttons.add(stepButton);
- 58.       add(buttons, BorderLayout.NORTH);
- 59.       setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
- 60.
- 61.       for (int i = 0; i < values.length; i++)
- 62.          values[i] = new Double(Math.random());
- 63.
- 64.       Thread t = new Thread(sorter);
- 65.       t.start();
- 66.    }
- 67.
- 68.    private static final int DEFAULT_WIDTH = 300;
- 69.    private static final int DEFAULT_HEIGHT = 300;
- 70.    private static final int VALUES_LENGTH = 30;
- 71. }
- 72.
- 73. /**
- 74.    This runnable executes a sort algorithm.
- 75.    When two elements are compared, the algorithm
- 76.    pauses and updates a panel.
- 77. */
- 78. class Sorter implements Runnable
- 79. {
- 80.    /**
- 81.       Constructs a Sorter.
- 82.       @param values the array to be sorted
- 83.       @param panel the panel on which to display the sorting progress
- 84.    */
- 85.    public Sorter(Double[] values, ArrayPanel panel)
- 86.    {
- 87.       this.values = values;
- 88.       this.panel = panel;
- 89.       this.gate = new Semaphore(1);
- 90.       this.run = false;
- 91.    }
- 92.
- 93.    /**
- 94.       Sets the sorter to "run" mode.
- 95.    */
- 96.    public void setRun()
- 97.    {
- 98.       run = true;
- 99.       gate.release();
-100.    }
-101.
-102.    /**
-103.       Sets the sorter to "step" mode.
-104.    */
-105.    public void setStep()
-106.    {
-107.       run = false;
-108.       gate.release();
-109.    }
-110.
-111.    public void run()
-112.    {
-113.       Comparator<Double> comp = new
-114.          Comparator<Double>()
-115.          {
-116.             public int compare(Double i1, Double i2)
-117.             {
-118.                panel.setValues(values, i1, i2);
-119.                try
-120.                {
-121.                   if (run)
-122.                      Thread.sleep(DELAY);
-123.                   else
-124.                      gate.acquire();
-125.                }
-126.                catch (InterruptedException exception)
-127.                {
-128.                   Thread.currentThread().interrupt();
-129.                }
-130.                return i1.compareTo(i2);
-131.             }
-132.          };
-133.       Arrays.sort(values, comp);
-134.       panel.setValues(values, null, null);
-135.    }
-136.
-137.    private Double[] values;
-138.    private ArrayPanel panel;
-139.    private Semaphore gate;
-140.    private static final int DELAY = 100;
-141.    private boolean run;
-142. }
-143.
-144. /**
-145.    This panel draws an array and marks two elements in the
-146.    array.
-147. */
-148. class ArrayPanel extends JPanel
-149. {
-150.
-151.    public void paintComponent(Graphics g)
-152.    {
-153.       if (values == null) return;
-154.       super.paintComponent(g);
-155.       Graphics2D g2 = (Graphics2D) g;
-156.       int width = getWidth() / values.length;
-157.       for (int i = 0; i < values.length; i++)
-158.       {
-159.          double height = values[i] * getHeight();
-160.          Rectangle2D bar = new Rectangle2D.Double(width * i, 0, width, height);
-161.          if (values[i] == marked1 || values[i] == marked2)
-162.             g2.fill(bar);
-163.          else
-164.             g2.draw(bar);
-165.       }
-166.    }
-167.
-168.    /**
-169.       Sets the values to be painted.
-170.       @param values the array of values to display
-171.       @param marked1 the first marked element
-172.       @param marked2 the second marked element
-173.    */
-174.    public void setValues(Double[] values, Double marked1, Double marked2)
-175.    {
-176.       this.values = values;
-177.       this.marked1 = marked1;
-178.       this.marked2 = marked2;
-179.       repaint();
-180.    }
-181.
-182.    private Double marked1;
-183.    private Double marked2;
-184.    private Double[] values;
-185. }
+1. import java.util.*;
+ 2. 
+ 3. /**
+ 4.    This program demonstrates the use of a priority queue.
+ 5. */
+ 6. public class PriorityQueueTest
+ 7. {  
+ 8.    public static void main(String[] args)
+ 9.    {  
+10.       PriorityQueue<GregorianCalendar> pq = new PriorityQueue<GregorianCalendar>();
+11.       pq.add(new GregorianCalendar(1906, Calendar.DECEMBER, 9)); // G. Hopper
+12.       pq.add(new GregorianCalendar(1815, Calendar.DECEMBER, 10)); // A. Lovelace
+13.       pq.add(new GregorianCalendar(1903, Calendar.DECEMBER, 3)); // J. von Neumann
+14.       pq.add(new GregorianCalendar(1910, Calendar.JUNE, 22)); // K. Zuse
+15. 
+16.       System.out.println("Iterating over elements...");
+17.       for (GregorianCalendar date : pq)
+18.          System.out.println(date.get(Calendar.YEAR));
+19.       System.out.println("Removing elements...");
+20.       while (!pq.isEmpty())
+21.          System.out.println(pq.remove().get(Calendar.YEAR));
+22.    }
+23. }

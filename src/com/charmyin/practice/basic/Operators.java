@@ -9,6 +9,14 @@ import org.junit.Test;
  */
 public class Operators {
 	
+	@Test
+	public void testxor(){
+		int i = 4;
+		int j = 6;
+		int k = i^j;
+		System.out.println(Integer.toBinaryString(i)+"^"+Integer.toBinaryString(j)+"=0"+Integer.toBinaryString(k));
+	}
+	
 	//@Test
 	public void testMinus(){
 		byte i = 127;
