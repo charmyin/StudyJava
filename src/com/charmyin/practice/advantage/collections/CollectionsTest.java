@@ -1,6 +1,7 @@
 package com.charmyin.practice.advantage.collections;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,8 +19,60 @@ import com.charmyin.practice.classObjects.Employee;
  * @author YinCM
  * @since
  */
-public class Collections {
+public class CollectionsTest {
 
+	@Test
+	public void testCollectionsUtils(){
+		List<String> list = new ArrayList<String>();
+		list.add("a");
+		list.add("b");
+		list.add("c");
+		
+		List<String> listSubed = list.subList(1, 3);
+		
+		List<List<String>> listTemp = Collections.nCopies(100, listSubed);
+		
+		List<String> destList = new ArrayList<String>();
+		destList.add("");
+		destList.add("");
+		Collections.copy(destList, listSubed);
+		
+		for(String a : destList){
+			System.out.println(a);
+		}
+	}
+	
+	
+	@Test
+	public void testSubList() {
+		List<String> list = new ArrayList<String>();
+		list.add("a");
+		list.add("b");
+		list.add("c");
+		List<String> listSubed = list.subList(1, 3);
+		for(String a : listSubed){
+			System.out.println(a);
+		}
+	}
+
+	static class Data {
+		String value;
+
+		Data(String value) {
+			this.value = value;
+		}
+		
+		public boolean equals(Data data){
+			
+			if(this==data || this.value.equals(data.value)){
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
+	
+	
 	@Test
 	public void testIterator() {
 		int[] ia = { 1, 2, 4, 5, 6 };
@@ -69,80 +122,77 @@ public class Collections {
 		LinkedList<Employee> list = new LinkedList<Employee>();
 
 		Employee empHead = new Employee("head", 123);
-		
+
 		Employee emp1 = new Employee("emp1", 123);
 		Employee emp2 = new Employee("emp2", 23);
-		
+
 		Employee empMiddle = new Employee("middle", 13);
-		
+
 		Employee emp3 = new Employee("emp3", 13);
 		Employee emp4 = new Employee("emp4", 13);
 
 		Employee empTail = new Employee("tail", 123);
-		
+
 		list.add(emp1);
 		list.add(emp2);
 		list.add(emp3);
 		list.add(emp4);
-		
+
 		list.addLast(empTail);
-		
+
 		list.addFirst(empHead);
-		
-		
+
 		ListIterator<Employee> listIt = list.listIterator();
-		
-		for(int i=0; i<list.size()/2; i++){
+
+		for (int i = 0; i < list.size() / 2; i++) {
 			listIt.next();
 		}
-		
+
 		listIt.add(empMiddle);
-		
-		
+
 		for (Employee emp : list) {
 			System.out.println(emp.getName());
 		}
 
 		System.out.println("-----------华丽力的风格先----remove");
 		/*
-		list.remove();
-
-		Iterator<Employee> it = list.iterator();
-
-		while (it.hasNext()) {
-			System.out.println(it.next().getName());
-		}*/
+		 * list.remove();
+		 * 
+		 * Iterator<Employee> it = list.iterator();
+		 * 
+		 * while (it.hasNext()) { System.out.println(it.next().getName()); }
+		 */
 		System.out.println("-----------华丽力的风格先----change previous obj");
 		ListIterator<Employee> it = list.listIterator();
-		
+
 		Employee emp = it.next();
 		Employee e = new Employee("e", 12);
 		it.set(e);
 		System.out.println(it.next().getName());
-		System.out.println("previous is "+it.previous().getName());
+		System.out.println("previous is " + it.previous().getName());
 		while (it.hasNext()) {
 			System.out.println(it.next().getName());
 		}
-		System.out.println(emp.getName()+emp.getAge());
+		System.out.println(emp.getName() + emp.getAge());
 		System.out.println("---------------------");
 		Iterator<Employee> itt = list.iterator();
 
 		while (itt.hasNext()) {
 			System.out.println(itt.next().getName());
 		}
-		 
+
 		System.out.println("-----------华丽力的风格先");
-		
-		
+
 		System.out.println("-----------华丽力的风格先");
-		
-		  /*Employee empTemp = it.next();
-		 
-		  System.out.println(empTemp.getName());
-		  
-		  Employee empTemp1 = it.next();
-		  
-		  System.out.println(empTemp1.getName());
+
+		/*
+		 * Employee empTemp = it.next();
+		 * 
+		 * System.out.println(empTemp.getName());
+		 * 
+		 * Employee empTemp1 = it.next();
+		 * 
+		 * System.out.println(empTemp1.getName());
 		 */
 
 	}
