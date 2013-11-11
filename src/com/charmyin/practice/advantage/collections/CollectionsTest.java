@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.Vector;
 
 import org.junit.Test;
 
@@ -42,6 +43,31 @@ public class CollectionsTest {
 		}
 	}
 	
+	@Test 
+	public void testVector(){
+		Vector<String> vect = new Vector<String>();
+		vect.add("x");
+		vect.add("y");
+		vect.add("z");
+		for(String str : vect){
+			System.out.println(str);
+		}
+	}
+	
+	@Test
+	public void testShuffle(){
+		List<String> list = new ArrayList<String>();
+		String str = new String("1");
+		list.add("2");
+		list.add("3");
+		list.add(str);
+		list.add("4");
+		Collections.shuffle(list);
+		int i = Collections.binarySearch(list, str); 
+		System.out.println(list.get(i));
+		System.out.println(i);
+		System.out.println(list);
+	}
 	
 	@Test
 	public void testSubList() {

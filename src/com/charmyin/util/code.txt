@@ -1,23 +1,53 @@
-1. import java.util.*;
- 2. 
- 3. /**
- 4.    This program demonstrates the use of a priority queue.
- 5. */
- 6. public class PriorityQueueTest
- 7. {  
- 8.    public static void main(String[] args)
- 9.    {  
-10.       PriorityQueue<GregorianCalendar> pq = new PriorityQueue<GregorianCalendar>();
-11.       pq.add(new GregorianCalendar(1906, Calendar.DECEMBER, 9)); // G. Hopper
-12.       pq.add(new GregorianCalendar(1815, Calendar.DECEMBER, 10)); // A. Lovelace
-13.       pq.add(new GregorianCalendar(1903, Calendar.DECEMBER, 3)); // J. von Neumann
-14.       pq.add(new GregorianCalendar(1910, Calendar.JUNE, 22)); // K. Zuse
-15. 
-16.       System.out.println("Iterating over elements...");
-17.       for (GregorianCalendar date : pq)
-18.          System.out.println(date.get(Calendar.YEAR));
-19.       System.out.println("Removing elements...");
-20.       while (!pq.isEmpty())
-21.          System.out.println(pq.remove().get(Calendar.YEAR));
-22.    }
-23. }
+			String SMTP_HOST_NAME = "mail.domain.com";  
+            String SMTP_PORT = "111";   
+              
+            String SMTP_FROM_ADDRESS="xxx@domain.com";  
+            String SMTP_TO_ADDRESS="yyy@domain.com";  
+            String subject="Textmsg";  
+            String fileAttachment = "C:\\filename.pdf";  
+          
+              Properties props = new Properties();  
+  
+              props.put("mail.smtp.host", SMTP_HOST_NAME);  
+              props.put("mail.smtp.auth", "true");  
+              props.put("mail.debug", "true");  
+              props.put("mail.smtp.port", SMTP_PORT );  
+              Session session = Session.getInstance(props,new javax.mail.Authenticator()  
+                {protected javax.mail.PasswordAuthentication   
+                    getPasswordAuthentication()   
+                {return new javax.mail.PasswordAuthentication("xxxx@domain.com","password");}});  
+              try{  
+              
+              Message msg = new MimeMessage(session);  
+            
+              msg.setFrom(new InternetAddress(SMTP_FROM_ADDRESS));  
+           // create the message part   
+              MimeBodyPart messageBodyPart =   
+                new MimeBodyPart();  
+          //fill message  
+              messageBodyPart.setText("Test mail one");  
+              Multipart multipart = new MimeMultipart();  
+              multipart.addBodyPart(messageBodyPart);  
+           // Part two is attachment  
+              messageBodyPart = new MimeBodyPart();  
+              DataSource source =   
+                new FileDataSource(fileAttachment);  
+              messageBodyPart.setDataHandler(  
+                new DataHandler(source));  
+              messageBodyPart.setFileName(fileAttachment);  
+              multipart.addBodyPart(messageBodyPart);  
+          // Put parts in message  
+              msg.setContent(multipart);  
+           
+  
+              msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(SMTP_TO_ADDRESS));  
+  
+              msg.setSubject(subject);  
+             // msg.setContent(content, "text/plain");  
+  
+              Transport.send(msg);  
+              System.out.println("success....................................");  
+              }  
+              catch(Exception e){  
+                  e.printStackTrace();        
+              }  
