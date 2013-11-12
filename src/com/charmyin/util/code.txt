@@ -1,53 +1,169 @@
-			String SMTP_HOST_NAME = "mail.domain.com";  
-            String SMTP_PORT = "111";   
-              
-            String SMTP_FROM_ADDRESS="xxx@domain.com";  
-            String SMTP_TO_ADDRESS="yyy@domain.com";  
-            String subject="Textmsg";  
-            String fileAttachment = "C:\\filename.pdf";  
-          
-              Properties props = new Properties();  
-  
-              props.put("mail.smtp.host", SMTP_HOST_NAME);  
-              props.put("mail.smtp.auth", "true");  
-              props.put("mail.debug", "true");  
-              props.put("mail.smtp.port", SMTP_PORT );  
-              Session session = Session.getInstance(props,new javax.mail.Authenticator()  
-                {protected javax.mail.PasswordAuthentication   
-                    getPasswordAuthentication()   
-                {return new javax.mail.PasswordAuthentication("xxxx@domain.com","password");}});  
-              try{  
-              
-              Message msg = new MimeMessage(session);  
-            
-              msg.setFrom(new InternetAddress(SMTP_FROM_ADDRESS));  
-           // create the message part   
-              MimeBodyPart messageBodyPart =   
-                new MimeBodyPart();  
-          //fill message  
-              messageBodyPart.setText("Test mail one");  
-              Multipart multipart = new MimeMultipart();  
-              multipart.addBodyPart(messageBodyPart);  
-           // Part two is attachment  
-              messageBodyPart = new MimeBodyPart();  
-              DataSource source =   
-                new FileDataSource(fileAttachment);  
-              messageBodyPart.setDataHandler(  
-                new DataHandler(source));  
-              messageBodyPart.setFileName(fileAttachment);  
-              multipart.addBodyPart(messageBodyPart);  
-          // Put parts in message  
-              msg.setContent(multipart);  
-           
-  
-              msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(SMTP_TO_ADDRESS));  
-  
-              msg.setSubject(subject);  
-             // msg.setContent(content, "text/plain");  
-  
-              Transport.send(msg);  
-              System.out.println("success....................................");  
-              }  
-              catch(Exception e){  
-                  e.printStackTrace();        
-              }  
+1. import java.io.*;
+  2. import java.net.*;
+  3. import java.util.*;
+  4.
+  5. /**
+  6.    This program connects to a URL and displays the
+  7.    response header data and the first 10 lines of the
+  8.    requested data.
+  9.
+ 10.    Supply the URL and an optional username and password (for
+ 11.    HTTP basic authentication) on the command line.
+ 12. */
+ 13. public class URLConnectionTest
+ 14. {
+ 15.    public static void main(String[] args)
+ 16.    {
+ 17.       try
+ 18.       {
+ 19.          String urlName;
+ 20.          if (args.length > 0)
+ 21.             urlName = args[0];
+ 22.          else
+ 23.             urlName = "http://java.sun.com";
+ 24.
+ 25.          URL url = new URL(urlName);
+ 26.          URLConnection connection = url.openConnection();
+ 27.
+ 28.          // set username, password if specified on command line
+ 29.
+ 30.          if (args.length > 2)
+ 31.          {
+ 32.             String username = args[1];
+ 33.             String password = args[2];
+ 34.             String input = username + ":" + password;
+ 35.             String encoding = base64Encode(input);
+ 36.             connection.setRequestProperty("Authorization", "Basic " + encoding);
+ 37.          }
+ 38.
+ 39.          connection.connect();
+ 40.
+ 41.          // print header fields
+ 42.
+ 43.          Map<String, List<String>> headers = connection.getHeaderFields();
+ 44.          for (Map.Entry<String, List<String>> entry : headers.entrySet())
+ 45.          {
+ 46.             String key = entry.getKey();
+ 47.             for (String value : entry.getValue())
+ 48.                System.out.println(key + ": " + value);
+ 49.          }
+ 50.
+ 51.          // print convenience functions
+ 52.
+ 53.          System.out.println("----------");
+ 54.          System.out.println("getContentType: " + connection.getContentType());
+ 55.          System.out.println("getContentLength: " + connection.getContentLength());
+ 56.          System.out.println("getContentEncoding: " + connection.getContentEncoding());
+ 57.          System.out.println("getDate: " + connection.getDate());
+ 58.          System.out.println("getExpiration: " + connection.getExpiration());
+ 59.          System.out.println("getLastModifed: " + connection.getLastModified());
+ 60.          System.out.println("----------");
+ 61.
+ 62.          Scanner in = new Scanner(connection.getInputStream());
+ 63.
+ 64.          // print first ten lines of contents
+ 65.
+ 66.          for (int n = 1; in.hasNextLine() && n <= 10; n++)
+ 67.             System.out.println(in.nextLine());
+ 68.          if (in.hasNextLine()) System.out.println(". . .");
+ 69.       }
+ 70.       catch (IOException e)
+ 71.       {
+ 72.          e.printStackTrace();
+ 73.       }
+ 74.    }
+ 75.
+ 76.    /**
+ 77.       Computes the Base64 encoding of a string
+ 78.       @param s a string
+ 79.       @return the Base 64 encoding of s
+ 80.    */
+ 81.    public static String base64Encode(String s)
+ 82.    {
+ 83.       ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+ 84.       Base64OutputStream out = new Base64OutputStream(bOut);
+ 85.       try
+ 86.       {
+ 87.          out.write(s.getBytes());
+ 88.          out.flush();
+ 89.       }
+ 90.       catch (IOException e)
+ 91.       {
+ 92.       }
+ 93.       return bOut.toString();
+ 94.    }
+ 95. }
+ 96.
+ 97. /**
+ 98.    This stream filter converts a stream of bytes to their
+ 99.    Base64 encoding.
+100.
+101.    Base64 encoding encodes 3 bytes into 4 characters.
+102.    |11111122|22223333|33444444|
+103.    Each set of 6 bits is encoded according to the
+104.    toBase64 map. If the number of input bytes is not
+105.    a multiple of 3, then the last group of 4 characters
+106.    is padded with one or two = signs. Each output line
+107.    is at most 76 characters.
+108. */
+109. class Base64OutputStream extends FilterOutputStream
+110. {
+111.    /**
+112.       Constructs the stream filter
+113.       @param out the stream to filter
+114.    */
+115.    public Base64OutputStream(OutputStream out)
+116.    {
+117.       super(out);
+118.    }
+119.
+120.    public void write(int c) throws IOException
+121.    {
+122.       inbuf[i] = c;
+123.       i++;
+124.       if (i == 3)
+125.       {
+126.          super.write(toBase64[(inbuf[0] & 0xFC) >> 2]);
+127.          super.write(toBase64[((inbuf[0] & 0x03) << 4) | ((inbuf[1] & 0xF0) >> 4)]);
+128.          super.write(toBase64[((inbuf[1] & 0x0F) << 2) | ((inbuf[2] & 0xC0) >> 6)]);
+129.          super.write(toBase64[inbuf[2] & 0x3F]);
+130.          col += 4;
+131.          i = 0;
+132.          if (col >= 76)
+133.          {
+134.             super.write('\n');
+135.             col = 0;
+136.          }
+137.       }
+138.    }
+139.
+140.    public void flush() throws IOException
+141.    {
+142.       if (i == 1)
+143.       {
+144.          super.write(toBase64[(inbuf[0] & 0xFC) >> 2]);
+145.          super.write(toBase64[(inbuf[0] & 0x03) << 4]);
+146.          super.write('=');
+147.          super.write('=');
+148.       }
+149.       else if (i == 2)
+150.       {
+151.          super.write(toBase64[(inbuf[0] & 0xFC) >> 2]);
+152.          super.write(toBase64[((inbuf[0] & 0x03) << 4) | ((inbuf[1] & 0xF0) >> 4)]);
+153.          super.write(toBase64[(inbuf[1] & 0x0F) << 2]);
+154.          super.write('=');
+155.       }
+156.    }
+157.
+158.    private static char[] toBase64 =
+159.    {
+160.       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+161.       'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+162.       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+163.       'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'
+164.    };
+165.
+166.    private int col = 0;
+167.    private int i = 0;
+168.    private int[] inbuf = new int[3];
+169. }

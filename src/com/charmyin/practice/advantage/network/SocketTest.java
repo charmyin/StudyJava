@@ -15,7 +15,7 @@ public class SocketTest
    {
       try
       {
-         Socket s = new Socket("time-A.timefreq.bldrdoc.gov", 13);
+         Socket s = new Socket("www.baidu.com", 80);
          try
          {
             InputStream inStream = s.getInputStream();
